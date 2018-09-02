@@ -11,7 +11,7 @@ export default (Vue, Opt = {}) => {
   const EVENTS = ['scroll', 'wheel', 'mousewheel', 'resize']
   // 工具函数
   const Util = {
-    //
+    // 获取动画事件名称
     getAnimationEvent () {
       const el = document.createElement('fake')
       const animations = {
@@ -26,6 +26,7 @@ export default (Vue, Opt = {}) => {
         }
       }
     },
+    // 节流函数
     throttle (action, delay) {
       let timeout = null
       let lastRun = 0
@@ -78,7 +79,7 @@ export default (Vue, Opt = {}) => {
    *  src:
    * }
    *
-   * imgCache存的是已经加载（下载完成）的图片
+   * imgCache存的是已经渲染了真实图片的el.src
    */
   const Listeners = []
   const imgCache = []
@@ -93,7 +94,7 @@ export default (Vue, Opt = {}) => {
   // 滚动时   滚动鼠标时(mousewheel是已经被废弃的属性)  缩放窗口时
   // 'scroll', 'wheel', 'mousewheel', 'resize' 事件的回调，
   const lazy = Util.throttle(_ => {
-    // 检查listeners是否渲染
+    // 检查listeners是否应该渲染
     for (let i = 0, l = Listeners.length; i < l; i++) {
       checkImage(Listeners[i])
     }
@@ -103,7 +104,7 @@ export default (Vue, Opt = {}) => {
     // 已经加载过的图片（页面出现了多次相同src的图片，设置lazy=loaded属性，立即渲染）
     if (imgCache.indexOf(listener.src) > -1) {
       return render(listener.el, listener.src, 'loaded')
-    // 未加载则加载图片
+    // 未加载过则加载图片
     } else {
       // 图片滚动到视口内的时候，加载真正的图片
       const rect = listener.el.getBoundingClientRect()
